@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	
+	<title>Theoriequiz</title>
+	<style>
+
+h1 { 
+	background: #f1f3f4 none repeat scroll 0 0 !important;
+	padding: 1rem !important;
+}
+
+#quiz ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+#quiz li {
+	margin: 0;
+	padding: 0;
+}
+
+#intro {font-size: 25px;}
+
+@media (hover: hover) {
+  #quiz label:hover {
+    background-color: #dfac20;
+  }
+}
+
+#quiz label {
+	display: block;
+	background-color: #F0F8FF;
+	margin: 0.1em 0;
+	padding: 1em 2em;
+	text-align: start;
+	max-width: 25em;
+}
+
+// verwende folgenden Code, um immer Hover-Status der Antworten zu haben ohne Mediaquery (für Touchscreens schlecht):
+//#quiz label:hover{background-color: #dfac20;} 
+
+
+
+#quiz input:checked ~ label,
+#quiz input:focus ~ label  {
+	background-color: #dfac20;
+	border-color: #866a00;
+}
+
+#quiz input {
+	left: -9999px;
+	position: absolute;
+}
+
+#quiz button:not(.startBtn) {
+	display: none;
+}
+
+#quiz button,
+#quiz label {
+	cursor: pointer;
+	font-size: 30px;
+}
+
+/* listing with solutions */
+
+.question {
+	font-weight: bold;
+}
+
+.correct {
+	color: #0c0;
+}
+
+.wrong {
+	color: #c00;
+}
+
+.correct:before {
+	content: '✓';
+	color: #0d0;
+}
+
+.wrong:before {
+	content: '✗';
+	color: #f00;
+}
+
+.correct:before,
+.wrong:before {
+	font: 2em bold;
+	padding: 0 0.2em;
+}
+
+#scores,
+#scores td,
+#scores th {
+	border: 1px solid black;
+	border-collapse: collapse;
+	text-align: center;
+}
+
+	</style>
+	<script>
+
+if (!Array.from) {
+  Array.from = (function () {
+    var toStr = Object.prototype.toString;
+    var isCallable = function (fn) {
+      return typeof fn === 'function' || toStr.call(fn) === '[object Function]';
+    };
+    var toInteger = function (value) {
+      var number = Number(value);
+      if (isNaN(number)) { return 0; }
+      if (number === 0 || !isFinite(number)) { return number; }
+      return (number > 0 ? 1 : -1) * Math.floor(Math.abs(number));
+    };
+    var maxSafeInteger = Math.pow(2, 53) - 1;
+    var toLength = function (value) {
+      var len = toInteger(value);
+      return Math.min(Math.max(len, 0), maxSafeInteger);
+    };
+
+   
+    return function from(arrayLike/*, mapFn, thisArg */) {
+    
+      var C = this;
+      var items = Object(arrayLike);
+      if (arrayLike == null) {
+        throw new TypeError("Array.from requires an array-like object - not null or undefined");
+      }
+      var mapFn = arguments.length > 1 ? arguments[1] : void undefined;
+      var T;
+      if (typeof mapFn !== 'undefined') {
+        if (!isCallable(mapFn)) {
+          throw new TypeError('Array.from: when provided, the second argument must be a function');
+        }
+
+        if (arguments.length > 2) {
+          T = arguments[2];
+        }
+      }
+
+      var len = toLength(items.length);
+      var A = isCallable(C) ? Object(new C(len)) : new Array(len);
+      var k = 0;
+      var kValue;
+      while (k < len) {
+        kValue = items[k];
+        if (mapFn) {
+          A[k] = typeof T === 'undefined' ? mapFn(kValue, k) : mapFn.call(T, kValue, k);
+        } else {
+          A[k] = kValue;
+        }
+        k += 1;
+      }
+    
+      A.length = len;
+      return A;
+    };
+  }());
+}
+
+'use strict';
+var myQuiz = {
+	container: null,
+
+	
+	createElement: function (o) {
+		var el, p;
+
+		if (o && (o.tag || o.tagName)) {
+			el = document.createElement(o.tag || o.tagName);
+
+			if (o.text || o.txt) {
+				var text = (o.text || o.txt)
+				el.innerHTML = text;
+			}
+
+			for (p in o) {
+				if (!p.match(/^t(e)?xt|tag(name)?$/i)) {
+					el[p] = o[p];
+				}
+			}
+		}
+
+		return el;
+	},
+
+	
+	createOptions: function () {
+		var t = this,
+			options = [],
+			ul = document.createElement("ul");
+
+		t.emptyContainer();
+
+		t.intoContainer(t.createElement({
+			tag: "h2",
+			text: t.currentQuestion.question+"</h2><br><img src='Bilder/"+t.currentQuestion.picture+" '>"
+
+		}));
+
+
+		t.intoContainer(t.createElement({
+			tag: "img",
+			text: "<img src='Bilder/"+t.currentQuestion.picture+"'>"
+
+		}));
+		t.intoContainer(ul);
+
+
+		
+		options.push(t.currentQuestion.solution);
+
+		t.currentQuestion.falses.forEach(function (s) {
+			options.push(s);
+		});
+
+		t.shuffleArray(options);
+
+		options.forEach(function (s, i) {
+			var li = document.createElement("li"),
+			label = t.createElement({
+				htmlFor: "a" + t.questions.length + "_" + i,
+				tag: "label",
+				text: s
+			}),
+			radio = t.createElement({
+				id: "a" + t.questions.length + "_" + i,
+				name: "answer",
+				tag: "input",
+				type: "radio",
+				tabindex: "0",
+				value: s
+			});
+
+			ul.appendChild(li);
+			li.appendChild(radio);
+			li.appendChild(label);
+
+
+		});
+
+		
+		t.intoContainer(t.createElement({
+			tag: "button",
+			text: "confirm choice",
+			type: "submit"
+		}));
+	},
+
+	currentChoices: [],
+	currentQuestion: null,
+
+// data kann in Form einer JSON-Datei eingepflegt werden
+
+	data: [{
+		category: 'Notenlehre',
+		picture: 'blank.png',
+		question: 'Welche Note steht im Violinschlüssel im vierten Zwischenraum?',
+		solution: 'e2',
+		falses: ['c2', 'h1', 'g2'],
+		explanation: 'Das E in der zweiten Oktave steht im vierten Zwischenraum.'
+	}, {
+		category: 'Rhythmus',
+		picture: 'blank.png',
+		question: 'Wieviele Achtelnoten haben zusammen die Länge einer halben Note?',
+		solution: '4',
+		falses: ['6', '8', '2'],
+		explanation: 'Vier Achtel ergeben zusammen die Länge einer Halben.'
+	}, {
+		category: 'Rhythmus',
+		picture: 'Takt.png',
+		question: 'Welcher Notenwert fehlt damit der Takt vollständig wird?',
+		solution: 'Achtel',
+		falses: ['Viertel', 'Sechzehntel', 'punktierte Viertel'],
+		explanation: 'Der Takt wird durch eine Achtel vervollständigt.'
+	}, {
+		category: 'Intervalle',
+		picture: 'fe.png',
+		question: 'Entscheide, ob es sich um einen Ganz- oder Halbtonschritt handelt!',
+		solution: 'Halbtonschritt',
+		falses: ['Ganztonschritt'],
+		explanation: 'Das Intervall zwischen ist ein Ganzton.'
+	}, {
+		category: 'Intervalle',
+		picture: 'fg.png',
+		question: 'Entscheide, ob es sich um einen Ganz- oder Halbtonschritt handelt!',
+		solution: 'Ganztonschritt',
+		falses: ['Halbtonschritt'],
+		explanation: 'Das Intervall zwischen ist ein Ganzton.'
+	}, {
+		category: 'Musikwissen',
+		picture: 'blank.png',
+		question: 'Was bedeutet die Vortragsanweisung "adagio"?',
+		solution: 'langsam',
+		falses: ['lebhaft', 'zart', 'traurig'],
+		explanation: 'Adagio ist italienisch für langsam.'
+	}, {
+		category: 'Musikwissen',
+		picture: 'blank.png',
+		question: 'Welches Instrument ist KEIN Holzblasinstrument?',
+		solution: 'Horn',
+		falses: ['Saxofon', 'Oboe', 'Querflöte'],
+		explanation: 'Das Horn ist ein Blechblasinstrument.'
+	}, {
+		category: 'Notenlehre',
+		picture: 'f1.png', 
+		question: 'Welche Note ist abgebildet?',
+		solution: 'f1',
+		falses: ['A', 'd1', 'd2'],
+		explanation: 'Ein Ton unter dem g1, dass der Violinschlüssel angibt'
+	}],
+
+	emptyContainer: function () {
+		var t = this;
+
+		while (t.container.firstChild) {
+			t.container.removeChild(t.container.firstChild);
+		}
+	},
+
+	handleInput: function () {
+		var t = this, // t points to myQuiz
+			
+			inputs = Array.from(
+				t.container.getElementsByTagName("input")
+			),
+			selectedSolution = "";
+
+		
+		inputs.forEach(function (o) {
+			if (o.checked) {
+				selectedSolution = o.value;
+			}
+		});
+
+		
+		if (selectedSolution && t.currentQuestion) {
+			t.currentChoices.push({
+				a: selectedSolution,
+				q: t.currentQuestion
+			});
+
+			t.play();
+		}
+
+		
+		if (!t.currentQuestion) {
+			t.play();
+		}
+	},
+
+	init: function () {
+		var t = this;
+
+		// Hier Code einfügen um Daten von externer Quelle zu laden
+
+		t.container = document.getElementById("quiz");
+
+		if (t.data.length && t.container) {
+
+
+			t.container.addEventListener(
+				"submit",
+				function (ev) {
+					t.handleInput();
+					ev.stopPropagation();
+					ev.preventDefault();
+					return false;
+				}
+			);
+
+			t.container.addEventListener(
+				"mouseup",
+				function (ev) {
+
+					
+					var go = ev.target.tagName.match(/^button$/i);
+
+					
+					if (ev.target.tagName.match(/^label$/i)
+						&& t.currentQuestion
+					) {
+						go = true;
+					}
+
+					if (go) {
+
+						window.setTimeout(
+							function () {
+								t.handleInput();
+							},
+							50
+						);
+
+						ev.stopPropagation();
+						ev.preventDefault();
+						return false;
+					}
+				}
+			);
+
+			t.start();
+		}
+	},
+
+	intoContainer: function (el, parentType) {
+		var t = this,
+			parent;
+
+		if (!el) {
+			return;
+		}
+
+		if (parentType) {
+
+			parent = document.createElement(parentType);
+			parent.appendChild(el);
+
+		} else {
+
+			parent = el;
+		}
+
+		t.container.appendChild(parent);
+
+		return parent;
+	},
+
+	
+	play: function () {
+		var t = this,
+			ol;
+
+		
+		if (!t.questions.length) {
+
+			t.showResults();
+
+			
+			window.setTimeout(
+				function () {
+					t.start();
+				},
+				50
+			);
+
+			return;
+		}
+
+		t.currentQuestion = t.questions.shift();
+
+		t.createOptions();
+	},
+
+	
+	questions: [],
+
+	
+	showResults: function () {
+		var cat, ol, s, scores = {}, t = this, tab, thead, tbody, tr;
+
+		t.emptyContainer();
+
+		
+		t.intoContainer(t.createElement({
+			tag: "p",
+			text: "Alle Fragen wurden beantwortet. Hier nun die Auswertung dazu:"
+		}));
+
+		
+		ol = t.intoContainer(t.createElement({
+			id: "result",
+			tag: "ol"
+		}));
+
+		t.currentChoices.forEach(function (o) {
+			var p, li = ol.appendChild(t.createElement({
+				tag: "li"
+			}));
+
+			
+			li.appendChild(t.createElement({
+				className: "question",
+				tag: "p",
+				text: "(" + o.q.category + ") " + o.q.question
+			}));
+
+			
+			p = li.appendChild(t.createElement({
+				tag: "p",
+				text: "ausgewählte Antwort: "
+			}));
+
+			p.appendChild(t.createElement({
+				className: (
+					o.q.solution == o.a
+					? "correct"
+					: "wrong"
+				),
+				tag: "em",
+				text: o.a
+			}));
+
+			
+			if (o.q.solution != o.a) {
+
+				p = li.appendChild(t.createElement({
+					tag: "p",
+					text: "Die richtige Antwort wäre gewesen: "
+				}));
+
+				p.appendChild(t.createElement({
+					tag: "em",
+					text: o.q.solution
+				}));
+			}
+
+			
+			if (o.q.explanation) {
+
+				p = li.appendChild(t.createElement({
+					tag: "p",
+					text: "Erklärung dazu: "
+				}));
+
+				p.appendChild(t.createElement({
+					tag: "em",
+					text: o.q.explanation
+				}));
+			}
+		});
+
+		
+		cat = [];
+
+		t.currentChoices.forEach(function (o) {
+			if (!cat.includes(o.q.category)) {
+				cat.push(o.q.category);
+			}
+		});
+
+		cat.sort();
+
+		cat.forEach(function (c) {
+			var correct = 0, num = 0;
+
+			t.currentChoices.forEach(function (o) {
+
+				if (o.q.category == c) {
+
+					num++;
+
+					if (o.q.solution == o.a) {
+						correct++;
+					}
+				}
+			});
+
+			scores[c] = Math.floor(100 * correct / num) + "%";
+		});
+
+		tab = t.intoContainer(t.createElement({
+			id: "scores",
+			tag: "table"
+		}));
+
+		tab.appendChild(t.createElement({
+			tag: "caption",
+			text: "Übersicht nach Kategorien"
+		}))
+
+		thead = tab.appendChild(t.createElement({
+			tag: "thead"
+		}))
+
+		tr = thead.appendChild(t.createElement({
+			tag: "tr"
+		}))
+
+		for (s in scores) {
+			tr.appendChild(t.createElement({
+				tag: "th",
+				text: s
+			}));
+		}
+
+		tbody = tab.appendChild(t.createElement({
+			tag: "tbody"
+		}))
+
+		tr = tbody.appendChild(t.createElement({
+			tag: "tr"
+		}))
+
+		for (s in scores) {
+			tr.appendChild(t.createElement({
+				tag: "td",
+				text: scores[s]
+			}));
+		}
+
+		
+		t.intoContainer(t.createElement({
+			tag: "p",
+			text: "Ein weiterer Versuch mit den gleichen Fragen?"
+		}));
+	},
+
+	
+	shuffleArray: function (a) {
+		var i = a.length;
+
+		while (i >= 2) {
+			var zi = Math.floor(Math.random() * i);
+			var t = a[zi];
+			a[zi] = a[--i];
+			a[i] = t;
+		}
+		
+	},
+
+	
+	start: function () {
+		var t = this;
+
+		
+		t.questions = [];
+
+		t.data.forEach(function (o) {
+			t.questions.push(o);
+		});
+
+		t.shuffleArray(t.questions);
+
+		t.currentChoices = [];
+		t.currentQuestion = null;
+
+		
+		t.intoContainer(
+			t.createElement({
+				className: "startBtn",
+				tag: "button",
+				text: "Los geht's!"
+				
+			}),
+			"p"
+		);
+	}
+};
+
+document.addEventListener("DOMContentLoaded", function () {
+	myQuiz.init();
+});
+	</script>
+</head>
+
+<body>
+	<h1>Theoriequiz</h1>
+
+	<main id="main">
+
+		<form id="quiz" action="">
+			<p id="intro">Hier testest du dein Wissen in den Bereichen <br><br><b>Notenlehre, <br>Rhythmus, <br>Intervalle und <br>musikalisches Allgemeinwissen</b>. <br><br>Am Ende gibt es eine Auswertung. </p>
+		</form>
+	</main>
+
+
+</body>
+
+</html>
