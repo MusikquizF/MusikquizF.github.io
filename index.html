@@ -259,62 +259,69 @@ var myQuiz = {
 
 // data kann in Form einer JSON-Datei eingepflegt werden
 
-	data: [{
-		category: 'Notenlehre',
-		picture: 'blank.png',
-		question: 'Welche Note steht im Violinschlüssel im vierten Zwischenraum?',
-		solution: 'e2',
-		falses: ['c2', 'h1', 'g2'],
-		explanation: 'Das E in der zweiten Oktave steht im vierten Zwischenraum.'
+	data: [ {
+		category: 'Tonleitern',
+		picture: 'blank.png', 
+		question: 'Was ist der wichtigste Unterschied zwischen Moll- und Durtonleiter?',
+		solution: 'Halbtonschritt 2. zu 3. Stufe',
+		falses: ['Moll hat b als Vorzeichen', 'Moll klingt eine Quinte höher', 'Ganztonschritt am Ende'],
+		explanation: 'Die erniedrigte 3. Stufe (kleine Terz) ist das wichtigste Klangmerkmal von Moll.'
 	}, {
-		category: 'Rhythmus',
+		category: 'Tonleitern',
 		picture: 'blank.png',
-		question: 'Wieviele Achtelnoten haben zusammen die Länge einer halben Note?',
-		solution: '4',
-		falses: ['6', '8', '2'],
-		explanation: 'Vier Achtel ergeben zusammen die Länge einer Halben.'
+		question: 'Welche Durtonart hat zwei Kreuze als Vorzeichen?',
+		solution: 'D-Dur',
+		falses: ['B-Dur', 'H-Dur', 'Fis-Dur'],
+		explanation: 'D-Dur hat die Vorzeichen fis und cis'
 	}, {
-		category: 'Rhythmus',
-		picture: 'Takt.png',
-		question: 'Welcher Notenwert fehlt damit der Takt vollständig wird?',
-		solution: 'Achtel',
-		falses: ['Viertel', 'Sechzehntel', 'punktierte Viertel'],
-		explanation: 'Der Takt wird durch eine Achtel vervollständigt.'
+		category: 'Tonleitern',
+		picture: 'Tonleiter.png',
+		question: 'Welche(s) Vorzeichen braucht diese Tonleiter, damit Moll daraus wird?',
+		solution: 'fis',
+		falses: ['b', 'keine', 'b und es'],
+		explanation: 'Die Tonleiter startet von e, e-Moll hat nur fis als Vorzeichen.'
 	}, {
 		category: 'Intervalle',
-		picture: 'fe.png',
-		question: 'Entscheide, ob es sich um einen Ganz- oder Halbtonschritt handelt!',
-		solution: 'Halbtonschritt',
-		falses: ['Ganztonschritt'],
-		explanation: 'Das Intervall zwischen ist ein Ganzton.'
+		picture: 'g6.png', 
+		question: 'Benenne den Abstand zwischen den beiden Tönen!',
+		solution: 'große Sexte',
+		falses: ['kleine Sexte', 'große Septime', 'kleine Septime'],
+		explanation: 'Der Abstand zwischen as1 und f2 ist eine große Sexte.'
 	}, {
 		category: 'Intervalle',
-		picture: 'fg.png',
-		question: 'Entscheide, ob es sich um einen Ganz- oder Halbtonschritt handelt!',
-		solution: 'Ganztonschritt',
-		falses: ['Halbtonschritt'],
+		picture: 'r5.png',
+		question: 'Welche der abgebildeten Quinten ist/sind rein?',
+		solution: '1 und 4',
+		falses: ['gar keine', '2', '2 und 3'],
+		explanation: 'Nur bei den Beispielen 1 und 4 gehören beide Töne als 1. und 5. Stufe zur gleichen Durtonleiter (=reine Quinte).'
+	}, {
+		category: 'Intervalle',
+		picture: 'Zweiklänge.png',
+		question: 'Welches der abgebildeten Intervalle hört sich an wie eine reine Quarte?',
+		solution: '3',
+		falses: ['gar keine', '1', '2'],
 		explanation: 'Das Intervall zwischen ist ein Ganzton.'
 	}, {
 		category: 'Musikwissen',
 		picture: 'blank.png',
-		question: 'Was bedeutet die Vortragsanweisung "adagio"?',
-		solution: 'langsam',
-		falses: ['lebhaft', 'zart', 'traurig'],
-		explanation: 'Adagio ist italienisch für langsam.'
+		question: 'Wieviele Tonhöhen unterscheidet das mitteleuropäische Tonsystem pro Oktave?',
+		solution: '12',
+		falses: ['8', '7', 'Das kommt auf das Tongeschlecht an.'],
+		explanation: 'Im mitteleuropäischen Tonsystem wird die Oktave in 12 Halbtöne geteilt.'
 	}, {
 		category: 'Musikwissen',
 		picture: 'blank.png',
-		question: 'Welches Instrument ist KEIN Holzblasinstrument?',
-		solution: 'Horn',
-		falses: ['Saxofon', 'Oboe', 'Querflöte'],
-		explanation: 'Das Horn ist ein Blechblasinstrument.'
+		question: 'Wie wird die Solokadenz in klassischen Instrumentalkonzerten meist eingeleitet?',
+		solution: 'Quart-Sext-Akkord vom Orchester',
+		falses: ['Soloinstrument spielt lauten Sextakkord', 'Dirigent zeigt einen 5/4-Takt', 'Wechsel des Tongeschlechts'],
+		explanation: 'Am Beginn einer Solokadenz steht in der Klassik meist ein Quart-Sext-Akkord des Orchesters.'
 	}, {
-		category: 'Notenlehre',
-		picture: 'f1.png', 
-		question: 'Welche Note ist abgebildet?',
-		solution: 'f1',
-		falses: ['A', 'd1', 'd2'],
-		explanation: 'Ein Ton unter dem g1, dass der Violinschlüssel angibt'
+		category: 'Musikwissen',
+		picture: 'blank.png', 
+		question: 'Welcher Klang steht sehr oft am Beginn eines Rezitativs?',
+		solution: 'Sextakkord',
+		falses: ['Dominantseptakkord', 'übermäßiger Dreiklang', 'verminderter Septakkord'],
+		explanation: 'Rezitative werden oft durch Sextakkorde eingeleitet.'
 	}],
 
 	emptyContainer: function () {
@@ -667,7 +674,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	<main id="main">
 
 		<form id="quiz" action="">
-			<p id="intro">Hier testest du dein Wissen in den Bereichen <br><br><b>Notenlehre, <br>Rhythmus, <br>Intervalle und <br>musikalisches Allgemeinwissen</b>. <br><br>Am Ende gibt es eine Auswertung. </p>
+			<p id="intro">Hier testest du dein Wissen in den Bereichen <br><br>Tonleitern, <br>Intervalle und <br>musikalisches Allgemeinwissen</b>. <br><br>Am Ende gibt es eine Auswertung. </p>
 		</form>
 	</main>
 
